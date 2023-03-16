@@ -37,3 +37,19 @@ class AFD():
                     afn.edge(state, next_state, label=symbol)
 
         afn.render('afd', view=True)
+
+
+    def simulacion(self, w, show_path = False):
+        path = []
+        curr_state = self.estado_inicial
+        for char in w:
+            path.append(curr_state)
+            if char not in self.alfabeto:
+                print("Cadena contiene caracteres que no pertenecen al alfabeto definido")
+                return False
+            curr_state = self.transitions.get(curr_state).get(char)
+        path.append(curr_state)
+        if show_path:
+            path = "->".join(path)
+            print(path)
+        return curr_state in self.estados_de_aceptacion

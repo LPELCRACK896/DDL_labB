@@ -2,6 +2,7 @@ import graphviz
 from stack import Stack
 from AFD import AFD
 from collections import deque
+from camino import Camino
 
 class AFN():
 
@@ -102,3 +103,43 @@ class AFN():
             new_states.pop(0)
             tabla_trancisiones_AFD.pop('VACIO')
         return AFD(str(self.cerraduras_de_estados.get(self.estado_inicial)), [alf for alf in self.alfabeto if alf != 'ε'], [str(state) for state in new_states], accepted_states, tabla_trancisiones_AFD)
+    
+    def check_cadena(self, cadena):
+        aprueba = True
+        cont = 0
+        while aprueba and cont!=len(cadena):
+            aprueba = cadena[cont] in self.alfabeto
+            cont += 1
+        return aprueba
+
+    def simulacion(self, w, show_path = False):
+        if not self.check_cadena(w):
+            print("Cadena invalida")
+            return
+        camino = Camino(f"Camino cadena: {w}", w, self.cerraduras_de_estados, self.transitions, self.estado_inicial, self.estados_de_aceptacion)
+        self.caminos, tiempo = camino.setup_tree()
+        __path_to_string = lambda  path: ' '.join([str(t) for t in path])
+        not_succesful_paths = []
+        succesfull_paths = []
+        for paths in camino.caminos_enlistado:
+            str_path = __path_to_string(paths[0])
+            if paths[1]:
+                succesfull_paths.append(str_path)
+            else:
+                not_succesful_paths.append(str_path)
+        if show_path:
+            if succesfull_paths:
+                print("La cadena puede ser aceptada")
+                print("----------Caminos que llevana a la aceptacion----------")
+                for pth in succesfull_paths:
+                    print(pth)
+            if not_succesful_paths:
+                if not succesfull_paths:
+                    print("La cadena no es aceptada")
+                print("----------Caminos fallidos----------")
+                for pth in not_succesful_paths:
+                    print(pth)
+
+        return len(succesfull_paths)>0
+ 
+
