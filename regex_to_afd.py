@@ -1,4 +1,5 @@
 from AFD import AFD
+from AFN import AFN
 class AFD_TEMP():
     def __init__(self, alphabet, states, start_state, transitions, accepting_states):
         self.alphabet = alphabet
@@ -22,7 +23,7 @@ class AFD_TEMP():
             new_transitions[state] = new_state_transitions
         
         return AFD(self.start_state, self.alphabet, self.states, self.accepting_states, new_transition)
-def regex_to_afd(regex):
+def regex_to_afd(regex) -> AFD:
     """Converts a regular expression to an AFD"""
     # Define a node class for the syntax tree
     class Node():
@@ -142,4 +143,15 @@ def regex_to_afd(regex):
                     transitions[(state_index[state], node.value)].add(state_index[next_state])
     accepting_states = set(state_index[state] for state in states if any(node.value == "end" for node in state))
     afd: AFD = AFD_TEMP(alphabet, states, start_state, transitions, accepting_states)
+    return afd
+from regex_to_posfix import infix_to_posfix
+from regex_to_afn import generate_afn_from_posfix
+def regex_to__afd(regex)-> AFD:
+    posfix, error, alphabet = infix_to_posfix(regex)
+    if  error:
+       return "Error on regex" 
+    afn: AFN = generate_afn_from_posfix(posfix, alphabet)
+    afn.find_cerradura()
+    afd = afn.to_afd()
+    afd.rename_states()
     return afd
